@@ -32,7 +32,6 @@ public class Homescreen extends AppCompatActivity {
 
     private Button btnSearch;
     private Button btnConnect;
-    private Button btnInfo;
     private ListView listDevices;
     private BluetoothAdapter myBTAdapter;
     private static final int BT_ENABLE_REQUEST = 10; // This is the code we use for BT Enable
@@ -54,7 +53,6 @@ public class Homescreen extends AppCompatActivity {
 
         btnSearch = (Button) findViewById(R.id.btnSearch);
         btnConnect = (Button) findViewById(R.id.btnConnect);
-        btnInfo = (Button) findViewById(R.id.btnInfo);
 
         listDevices = (ListView) findViewById(R.id.lstDevices);
 
@@ -106,22 +104,9 @@ public class Homescreen extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        btnInfo.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                openNewActivity();
-            }
-        });
+}
 
 
-    }
-
-    public void openNewActivity(){
-        Intent intent = new Intent(this, InfoActivity.class);
-        startActivity(intent);
-    }
 
 
     @Override

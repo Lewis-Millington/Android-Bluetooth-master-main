@@ -24,18 +24,14 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-    private static final String TAG = "BlueTest5-MainActivity";
+    private static final String TAG = "BlueToothScale";
     private int mMaxChars = 50000;//Default
     private UUID mDeviceUUID;
     private BluetoothSocket mBTSocket;
     private ReadInput mReadThread = null;
     private boolean mIsUserInitiatedDisconnect = false;
     private Button btnPrint;
-    private Button btnON;
     private Button btnOFF;
-    private Button btnHum;
-    private Button btnSoil;
-    private Button btnTemp;
     private boolean mIsBluetoothConnected = false;
     private BluetoothDevice mDevice;
     private ProgressDialog progressDialog;
@@ -55,12 +51,7 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Ready");
 
         btnPrint = (Button) findViewById(R.id.btnPrint);
-        btnON = (Button) findViewById(R.id.btnOn);
         btnOFF = (Button) findViewById(R.id.btn_off);
-        btnHum = (Button) findViewById(R.id.hum);
-        btnSoil = (Button) findViewById(R.id.soil);
-        btnTemp = (Button) findViewById(R.id.temp);
-
 
         btnOFF.setOnClickListener(new OnClickListener() {
 
@@ -70,64 +61,6 @@ public class MainActivity extends Activity {
                 new DisConnectBT().execute();
             }
         });
-
-        btnON.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                try {
-                    mBTSocket.getOutputStream().write("1".toString().getBytes());
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        });
-
-
-        btnTemp.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                try {
-                    btnPrint.setText("");
-                    mBTSocket.getOutputStream().write("a".toString().getBytes());
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        btnSoil.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                try {
-                    btnPrint.setText("");
-                    mBTSocket.getOutputStream().write("b".toString().getBytes());
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        });
-        btnHum.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                try {
-                    btnPrint.setText("");
-                    mBTSocket.getOutputStream().write("c".toString().getBytes());
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        createNotificationChannel();
-
     }
 
 
@@ -161,10 +94,6 @@ public class MainActivity extends Activity {
                         }
                         final String strInput = new String(buffer, 0, i);
                         btnPrint.setText(strInput);
-                        if(strInput.contains("heavy")){
-                            sendNotification();
-                        }
-
                     }
                     Thread.sleep(500);
                 }
@@ -198,7 +127,6 @@ public class MainActivity extends Activity {
                 while (mReadThread.isRunning())
                     ; // Wait until it stops
                 mReadThread = null;
-
             }
 
             try {
@@ -219,7 +147,6 @@ public class MainActivity extends Activity {
                 finish();
             }
         }
-
     }
 
     private void msg(String s) {
@@ -293,50 +220,7 @@ public class MainActivity extends Activity {
                 mIsBluetoothConnected = true;
                 mReadThread = new ReadInput(); // Kick off input reader
             }
-
             progressDialog.dismiss();
         }
-
-    }
-
-    public void sendNotification() {
-        getNotificationBuilder();
-        NotificationCompat.Builder notifyBuilder = getNotificationBuilder();
-        mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build());
-    }
-
-    // Create a NotificationChannel
-    NotificationChannel notificationChannel = new NotificationChannel(PRIMARY_CHANNEL_ID,
-            "Mascot Notification", NotificationManager
-            .IMPORTANCE_HIGH);
-
-    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
-    private NotificationManager mNotifyManager;
-
-    public void createNotificationChannel() {
-        mNotifyManager = (NotificationManager)
-                getSystemService(NOTIFICATION_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >=
-                android.os.Build.VERSION_CODES.O) {
-            // Create a NotificationChannel
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
-            notificationChannel.enableVibration(true);
-            notificationChannel.setDescription("Notification from Weather Station");
-            mNotifyManager.createNotificationChannel(notificationChannel);
-        }
-    }
-    private static final int NOTIFICATION_ID = 0;
-    private NotificationCompat.Builder getNotificationBuilder(){
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this,
-                NOTIFICATION_ID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(this, PRIMARY_CHANNEL_ID)
-                .setContentTitle("Heavy rain in the area!")
-                .setContentText("The FC37 sensor detected a large quantity of rain in the area.")
-                .setSmallIcon(R.drawable.ic_rain)
-                .setContentIntent(notificationPendingIntent)
-                .setAutoCancel(true);
-        return notifyBuilder;
     }
 }
