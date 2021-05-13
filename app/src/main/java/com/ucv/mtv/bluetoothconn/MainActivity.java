@@ -2,6 +2,7 @@ package com.ucv.mtv.bluetoothconn;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.UUID;
 import android.app.Activity;
 import android.app.NotificationChannel;
@@ -32,9 +33,11 @@ public class MainActivity extends Activity {
     private boolean mIsUserInitiatedDisconnect = false;
     private Button btnPrint;
     private Button btnOFF;
+    private Button btnTare;
     private boolean mIsBluetoothConnected = false;
     private BluetoothDevice mDevice;
     private ProgressDialog progressDialog;
+    private String Tare = "Tare";
 
 
     @Override
@@ -52,6 +55,7 @@ public class MainActivity extends Activity {
 
         btnPrint = (Button) findViewById(R.id.btnPrint);
         btnOFF = (Button) findViewById(R.id.btn_off);
+        btnTare = findViewById(R.id.btnTare);
 
         btnOFF.setOnClickListener(new OnClickListener() {
 
@@ -61,9 +65,20 @@ public class MainActivity extends Activity {
                 new DisConnectBT().execute();
             }
         });
+
+        btnTare.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if(mBTSocket != null){
+                    try {
+                        mBTSocket.getOutputStream().write(Tare.getBytes(Charset.forName("UTF-8")));
+                    } catch (IOException ignored) {
+
+                    }
+                }
+            }
+        });
     }
-
-
     private class ReadInput implements Runnable {
 
         private boolean bStop = false;
@@ -207,6 +222,8 @@ public class MainActivity extends Activity {
             }
             return null;
         }
+
+
 
         @Override
         protected void onPostExecute(Void result) {
